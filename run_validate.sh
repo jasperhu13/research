@@ -9,4 +9,7 @@ export PYTHONPATH=/path/to/SlowFast/slowfast:$PYTHONPATH
 sed -i '/"PIL"/d' slowfast/setup.py
 python slowfast/setup.py build develop
 sed -i 's|import simplejson|import json as simplejson|' slowfast/slowfast/utils/logging.py
-python validate.py
+cd slowfast
+mv ../mvit_model.py .
+mv ../validate.py .
+python3 validate.py
