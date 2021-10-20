@@ -110,10 +110,11 @@ model_im = MViT(data_num_frames = 1,
 
 DetectionCheckpointer(model_im).load("/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth")
 inds = np.array(sorted(list(set(cls_idx_map.values()))))
-#new_weights = model_im.head.projection.weight.data[inds,:]
-#new_bias = 
-#model_im.head.projection = nn.Linear(768, 30)
-#model_im.head.projection.weight.data = new_weights
+new_weights = model_im.head.projection.weight.data[inds,:]
+new_bias = model_im.head.projection.weight.bias[inds,:]
+model_im.head.projection = nn.Linear(768, 30)
+model_im.head.projection.weight.data = new_weights
+model_im.heads.projection.weight.bias = new_bias
 
 test_input = torch.rand((1, 1,3, 224, 224))
 model_im.eval()
@@ -131,7 +132,7 @@ def validate(val_loader, model, inds):
     for i, (images, target) in enumerate(val_loader):
       images.to(torch.device("cuda"))
       output = model(images.unsqueeze(0))
-      output = output[:, inds]
+      #output = output[:, inds]
       _, top1 = torch.topk(output, 1, dim = 1)
       _, top5 = torch.topk(output, 5, dim = 1)
      # print(top1[:,0])
