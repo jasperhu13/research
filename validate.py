@@ -111,16 +111,11 @@ model_im = MViT(data_num_frames = 1,
 DetectionCheckpointer(model_im).load("/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth")
 inds = np.array(sorted(list(set(cls_idx_map.values()))))
 new_weights = model_im.head.projection.weight.data[inds,:]
-new_bias = model_im.head.projection.bias.data[inds,:]
+print(model_im.head.projection.bias.data.size())
+new_bias = model_im.head.projection.bias.data[inds]
 model_im.head.projection = nn.Linear(768, 30)
 model_im.head.projection.weight.data = new_weights
 model_im.head.projection.bias.data = new_bias
-
-test_input = torch.rand((1, 1,3, 224, 224))
-model_im.eval()
-x = model_im(test_input)
-
-x[:, inds]
 
 def validate(val_loader, model, inds):
   model.eval()
