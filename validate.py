@@ -108,10 +108,10 @@ model_im = MViT(data_num_frames = 1,
                 mvit_pool_kv_stride_adaptive = [1, 4,4],
                 model_dropout_rate = 0.0)
 
-#DetectionCheckpointer(model_im).load("/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-weightPath = "/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth"
-model_im.load_state_dict(torch.load(weightPath, map_location=device)['model_state'])
+DetectionCheckpointer(model_im).load("/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth")
+#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#weightPath = "/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth"
+#model_im.load_state_dict(torch.load(weightPath, map_location=device)['model_state'])
 inds = np.array(sorted(list(set(cls_idx_map.values()))))
 new_weights = model_im.head.projection.weight.data[inds,:]
 print(model_im.head.projection.bias.data.size())
