@@ -9,7 +9,7 @@ import os, json
 
 
 
-from mvit_model import MViT
+from mvit_model import make_mvit_imagenet
 #from google.colab import drive
 #drive.mount('/content/drive')
 
@@ -67,31 +67,13 @@ train_dataloader = torch.utils.data.DataLoader(
 
 """# **ImageNet Model**"""
 
-model_im = MViT(data_num_frames = 1,
-                mvit_patch_2d = True, 
-                mvit_patch_kernel = [7, 7],
-                mvit_patch_stride = [4, 4],
-                mvit_patch_padding = [3, 3],
-                model_num_classes = 1000,
-                mvit_dropout_rate = 0.1, mvit_depth = 16,
-                mvit_dim_mul = [[1, 2.0], [3, 2.0], [14, 2.0]],
-                mvit_head_mul = [[1, 2.0], [3, 2.0], [14, 2.0]],
-                mvit_pool_q_stride = [[1, 1, 2, 2,], [3, 1, 2, 2], [14, 1, 2, 2]],
-                mvit_pool_kvq_kernel = [1, 3, 3], 
-                mvit_pool_kv_stride_adaptive = [1, 4,4],
-                model_dropout_rate = 0.0)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 weightPath = "/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth"
-model_im.load_state_dict(torch.load(weightPath, map_location=device)['model_state'], strict = False)
 inds = np.array(sorted(list(set(cls_idx_map.values()))))
-new_weights = model_im.head.projection.weight.data[inds,:]
-new_bias = model_im.head.projection.bias.data[inds]
-model_im.head.projection = nn.Linear(768, 30)
-model_im.head.projection.weight.data = new_weights
-model_im.head.projection.bias.data = new_bias
+model_im = make_mvit_imagenet(inds, weights=weightPath, device = device)
 
-def validate(val_loader, model, inds):
+def validate(val_loader, model):
   model.eval()
   num_top1 = 0
   num_top5 = 0

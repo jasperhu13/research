@@ -390,7 +390,7 @@ class MViT(nn.Module):
                  mvit_droppath_rate = 0.3,
                  mvit_mode = "conv",
                  mvit_cls_embed_on = True,
-                 mvit_sep_pos_embed = True,
+                 mvit_sep_pos_embed = False,
                  mvit_norm = "layernorm",
                  mvit_patch_kernel = (3, 7, 7),
                  mvit_patch_stride = (2, 4, 4),
@@ -792,6 +792,38 @@ class TransformerBasicHead(nn.Module):
         if not self.training:
             x = self.act(x)
         return x
+def make_mvit_imagenet(inds, weights = None, device = None):
+    model = MViT(data_num_frames = 1,
+                mvit_patch_2d = True, 
+                mvit_patch_kernel = [7, 7],
+                mvit_patch_stride = [4, 4],
+                mvit_patch_padding = [3, 3],
+                model_num_classes = 1000,
+                mvit_dropout_rate = 0.1, mvit_depth = 16,
+                mvit_dim_mul = [[1, 2.0], [3, 2.0], [14, 2.0]],
+                mvit_head_mul = [[1, 2.0], [3, 2.0], [14, 2.0]],
+                mvit_pool_q_stride = [[1, 1, 2, 2,], [3, 1, 2, 2], [14, 1, 2, 2]],
+                mvit_pool_kvq_kernel = [1, 3, 3], 
+                mvit_pool_kv_stride_adaptive = [1, 4,4],
+                model_dropout_rate = 0.0)
+    if weights:
+        model.load_state_dict(torch.load(weights, map_location=device)['model_state'], strict = False)
+    new_weights = model.head.projection.weight.data[inds,:]
+    new_bias = model.head.projection.bias.data[inds]
+    model.head.projection = nn.Linear(768, 30)
+    model.head.projection.weight.data = new_weights
+    model.head.projection.bias.data = new_bias
+    return model
+def make_mvit_kinetics600(inds, weights = None, device = None):
+    model = MViT()
+    if weights:
+        model.load_state_dict(torch.load(weights, map_location=device)['model_state'], strict = False)
+    new_weights = model.head.projection.weight.data[inds,:]
+    new_bias = model.head.projection.bias.data[inds]
+    model.head.projection = nn.Linear(768, 30)
+    model.head.projection.weight.data = new_weights
+    model.head.projection.bias.data = new_bias
+    return model
 
 # Commented out IPython magic to ensure Python compatibility.
 # %%bash
