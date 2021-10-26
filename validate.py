@@ -1,41 +1,15 @@
 
 
-# Some basic setup:
-# Setup detectron2 logger
-import detectron2
-from detectron2.utils.logger import setup_logger
-setup_logger()
-
 # import some common libraries
 import numpy as np
 
 import torch, torchvision 
 import torch.nn as nn
-import os, json, cv2, random
-from google.colab.patches import cv2_imshow
-
-# import some common detectron2 utilities
-from detectron2 import model_zoo
-from detectron2.engine import DefaultPredictor
-from detectron2.config import get_cfg
-from detectron2.utils.visualizer import Visualizer
-from detectron2.data import MetadataCatalog, DatasetCatalog
+import os, json
 
 
-from functools import reduce
-import operator
-from slowfast.utils.parser import load_config
-from slowfast.config.defaults import get_cfg, assert_and_infer_cfg
-from slowfast.models.utils import round_width, validate_checkpoint_wrapper_import
-from slowfast.models.common import DropPath, Mlp
-import numpy
-import math
-import sys
-import yaml
 
 from mvit_model import MViT
-from detectron2.checkpoint import DetectionCheckpointer
-
 #from google.colab import drive
 #drive.mount('/content/drive')
 
@@ -48,14 +22,13 @@ def get_class(file_name):
 def get_val_index(file_name):
   return int(file_name.split("_")[2].split(".")[0])
 
-import json
-import os
+
 with open('/content/drive/MyDrive/Colab Notebooks/research/multiscale/Data/imagenet-30/classes.json') as json_file:
     classes = json.load(json_file)
 indices = []
 root_dir = '/content/drive/MyDrive/Colab Notebooks/research/multiscale/Data/imagenet-30/val'
 
-import ast
+
 verify_dict = {}
 classes_1k = []
 with open('/content/drive/MyDrive/Colab Notebooks/research/multiscale/map_clsloc.txt') as file:
@@ -108,13 +81,11 @@ model_im = MViT(data_num_frames = 1,
                 mvit_pool_kv_stride_adaptive = [1, 4,4],
                 model_dropout_rate = 0.0)
 
-DetectionCheckpointer(model_im).load("/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth")
-#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-#weightPath = "/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth"
-#model_im.load_state_dict(torch.load(weightPath, map_location=device)['model_state'])
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+weightPath = "/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth"
+model_im.load_state_dict(torch.load(weightPath, map_location=device)['model_state'], strict = False)
 inds = np.array(sorted(list(set(cls_idx_map.values()))))
 new_weights = model_im.head.projection.weight.data[inds,:]
-print(model_im.head.projection.bias.data.size())
 new_bias = model_im.head.projection.bias.data[inds]
 model_im.head.projection = nn.Linear(768, 30)
 model_im.head.projection.weight.data = new_weights
