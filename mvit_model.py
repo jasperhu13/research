@@ -631,6 +631,8 @@ class MViT(nn.Module):
         x = self.patch_embed(x)
 
         T = self.data_num_frames // self.patch_stride[0]
+        if T == 0:
+            T = 1
         H = self.data_train_crop_size // self.patch_stride[1]
         W = self.data_train_crop_size // self.patch_stride[2]
         B, N, C = x.shape
