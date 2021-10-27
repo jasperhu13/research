@@ -9,7 +9,7 @@ import os, json
 
 
 
-from mvit_model import make_mvit_imagenet
+#from mvit_model import make_mvit_imagenet
 #from google.colab import drive
 #drive.mount('/content/drive')
 
@@ -71,7 +71,7 @@ train_dataloader = torch.utils.data.DataLoader(
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 weightPath = "/content/drive/MyDrive/Colab Notebooks/research/multiscale/IN1K_MVIT_B_16_CONV.pyth"
 
-model_im = make_mvit_imagenet(inds, weights=weightPath, device = device)
+#model_im = make_mvit_imagenet(inds, weights=weightPath, device = device)
 def accuracy(output, target, topk=(1,)):
     """Computes the accuracy over the k top predictions for the specified values of k"""
     with torch.no_grad():
@@ -141,5 +141,5 @@ def validate(val_loader, model):
   return num_top1/num_total
 
 
-print(validate(train_dataloader, model_im, inds))
+#print(validate(train_dataloader, model_im, inds))
 
