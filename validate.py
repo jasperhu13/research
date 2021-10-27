@@ -111,7 +111,7 @@ def train_step(train_loader, model, criterion, optimizer):
 def train(train_loader, val_loader, model, criterion, optimizer, num_epochs):
   for epoch in range(num_epochs):
     train_step(train_loader, model, criterion, optimizer)
-    acc1 = validate(val_loader, model, criterion)
+    acc1 = validate(val_loader, model)
     print("Epoch: ", epoch, "Validation Accuracy:", acc1)
 
 
