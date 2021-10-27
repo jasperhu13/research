@@ -97,11 +97,11 @@ def train_step(train_loader, model, criterion, optimizer):
         target = target.to(device)
 
         # compute output
-        output = model(images)
+        output = model(images.unsqueeze(0))
         loss = criterion(output, target)
 
         # measure accuracy and record loss
-        acc1= accuracy(output, target, topk=1)
+        acc1= accuracy(output, target)
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -109,8 +109,8 @@ def train_step(train_loader, model, criterion, optimizer):
         optimizer.step()
 
 def train(train_loader, val_loader, model, criterion, optimizer, num_epochs):
-  for epoch in num_epochs:
-    train(train_loader, model, criterion, optimizer)
+  for epoch in range(num_epochs):
+    train_step(train_loader, model, criterion, optimizer)
     acc1 = validate(val_loader, model, criterion)
     print("Epoch: ", epoch, "Validation Accuracy:", acc1)
 
