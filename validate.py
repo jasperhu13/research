@@ -48,7 +48,7 @@ def get_imagenet_inds():
     cls_idx_map[cls] = cls_all_map[cls]
   inds = np.array(sorted(list(set(cls_idx_map.values()))))
   return inds
-
+root_dir = '/content/drive/MyDrive/Colab Notebooks/research/multiscale/Data/imagenet-30/val'
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 from torchvision import datasets
