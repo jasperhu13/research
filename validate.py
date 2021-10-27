@@ -87,14 +87,14 @@ def accuracy(output, target, topk=(1,)):
             correct_k = correct[:k].reshape(-1).float().sum(0, keepdim=True)
             res.append(correct_k.mul_(100.0 / batch_size))
         return res
-def train_step(train_loader, model, criterion, optimizer):
+def train_step(train_loader, model, criterion, optimizer, device):
 
     # switch to train mode
     model.train()
     for i, (images, target) in enumerate(train_loader):
         # measure data loading time
-        images = images.to(device)
-        target = target.to(device)
+        images.to(device)
+        target.to(device)
 
         # compute output
         output = model(images.unsqueeze(0))
@@ -108,15 +108,15 @@ def train_step(train_loader, model, criterion, optimizer):
         loss.backward()
         optimizer.step()
 
-def train(train_loader, val_loader, model, criterion, optimizer, num_epochs):
+def train(train_loader, val_loader, model, criterion, optimizer, num_epochs, device):
   for epoch in range(num_epochs):
-    train_step(train_loader, model, criterion, optimizer)
-    acc1 = validate(val_loader, model)
+    train_step(train_loader, model, criterion, optimizer, device)
+    acc1 = validate(val_loader, model, device)
     print("Epoch: ", epoch, "Validation Accuracy:", acc1)
 
 
 
-def validate(val_loader, model):
+def validate(val_loader, model, device):
   model.eval()
   num_top1 = 0
   num_top5 = 0
@@ -124,7 +124,8 @@ def validate(val_loader, model):
 
   with torch.no_grad():
     for i, (images, target) in enumerate(val_loader):
-      images.to(torch.device("cuda"))
+      images.to(device)
+      target.to(device)
       output = model(images.unsqueeze(0))
       #output = output[:, inds]
       _, top1 = torch.topk(output, 1, dim = 1)
