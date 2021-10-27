@@ -93,8 +93,8 @@ def train_step(train_loader, model, criterion, optimizer, device):
     model.train()
     for i, (images, target) in enumerate(train_loader):
         # measure data loading time
-        images.to(device)
-        target.to(device)
+        images = images.to(device)
+        target = target.to(device)
 
         # compute output
         output = model(images.unsqueeze(0))
@@ -124,8 +124,8 @@ def validate(val_loader, model, device):
 
   with torch.no_grad():
     for i, (images, target) in enumerate(val_loader):
-      images.to(device)
-      target.to(device)
+      images = images.to(device)
+      target = target.to(device)
       output = model(images.unsqueeze(0))
       #output = output[:, inds]
       _, top1 = torch.topk(output, 1, dim = 1)
